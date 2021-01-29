@@ -21,6 +21,7 @@ router.get('/sse', (req, res) => {
   Stream.on('push', (event, data) => {
     console.log('oui');
     res.write('event: ' + String(event) + '\n' + 'data: ' + JSON.stringify(data) + ' \n\n');
+    res.write('event: ' + String(event) + '\n' + 'data: ' + JSON.stringify(data) + ' \n\n');
   });
 });
 
@@ -38,6 +39,7 @@ router.get('/stream', (request, response) => {
 
 router.post('/', (req, res) => {
   try {
+    console.log(req.body);
     const repas = Repas.create(req.body);
     Stream.emit("push", "test", { repas: repas });
     //Stream.emit('end');
