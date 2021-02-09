@@ -16,6 +16,10 @@ module.exports = class BaseModel {
     this.load();
   }
 
+  getSchema() {
+    return this.schema;
+  }
+
   load() {
     try {
       this.items = JSON.parse(fs.readFileSync(this.filePath, 'utf8'));
@@ -47,7 +51,6 @@ module.exports = class BaseModel {
     const item = { ...obj, id: Date.now() };
     // const { error } = Joi.validate(item, this.schema);
     const { error } = this.schema.validate(item);
-    console.log(error)
     if (error) throw new ValidationError(`Create Error : Object ${JSON.stringify(obj)} does not match schema of model ${this.name}`, error);
     this.items.push(item);
     this.save();
