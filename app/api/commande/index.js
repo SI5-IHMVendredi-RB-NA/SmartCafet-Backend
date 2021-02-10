@@ -8,11 +8,11 @@ Stream.on('message', (text) => {
 });
 
 const {
-  Repas, Entree, Plat, Dessert, Boisson,
+  Repas, Entree, Plat, Dessert, Boisson, Commande,
 } = require('../../models');
 
 const router = new Router();
-router.get('/', (req, res) => { res.status(200).json(Repas.get()); });
+router.get('/', (req, res) => { res.status(200).json(Commande.get()); });
 
 /*
 router.get('/sse', (req, res) => {
@@ -40,17 +40,43 @@ router.get('/stream', (request, response) => {
 
   response.on('close', () => {
     console.log('client dropped me');
-    response.end();
   });
 });
 
 router.post('/', (req, res) => {
   try {
+    const entree = req.body.repas.entree.nom;
+    const plat = req.body.repas.plat.nom;
+    const boisson = req.body.repas.boisson.nom;
+    const dessert = req.body.repas.dessert.nom;
+    const { prix } = req.body.repas;
+    const tmp = {
+      prix, entree, plat, boisson, dessert,
+    };
+    // console.log(tmp);
+    const repas = Repas.create(tmp);
+    const tmpOrder = {
+      id: '1',
+      repas: repas,
+      status: 'PROGRESS',
+      idClient: req.body.idClient,
+    };
+    const order = Commande.create(tmpOrder);
+    // console.log(order);
+    Stream.emit('push', 'new commande', { order });
+    res.status(201).json(order);
     /* const entree = Entree.create(req.body.entree);
      const plat = Plat.create(req.body.plat);
      const boisson = Boisson.create(req.body.boisson);
      const dessert = Dessert.create(req.body.dessert); */
-    const entree = req.body.entree.nom;
+    /*     const entree = req.body.entree.nom;
+        const plat = req.body.plat.nom;
+        const boisson = req.body.boisson.nom;
+        const dessert = req.body.dessert.nom;
+        const prix = req.body.prix;
+        const tmp = {prix, entree, plat, boisson, dessert,}; */
+
+    /*const entree = req.body.entree.nom;
     const plat = req.body.plat.nom;
     const boisson = req.body.boisson.nom;
     const dessert = req.body.dessert.nom;
@@ -58,11 +84,34 @@ router.post('/', (req, res) => {
     const tmp = {
       prix, entree, plat, boisson, dessert,
     };
-    console.log(tmp);
+    // console.log(tmp);
     const repas = Repas.create(tmp);
-    Stream.emit('push', 'new repas', { repas });
+    // Stream.emit('push', 'new repas', { repas });
     // Stream.emit('end');
-    res.status(201).json(repas);
+
+    const tmpOrder = {
+      id: '1',
+      repas: repas,
+      status: 'PROGRESS',
+    };
+    const order = Commande.create(tmpOrder);
+    Stream.emit('push', 'new commande', { order });
+    res.status(201).json(order);*/
+  } catch (err) {
+    if (err.name === 'ValidationError') {
+      res.status(400).json(err.extra);
+    } else {
+      res.status(500).json(err);
+    }
+  }
+});
+
+router.post('/validate', (req, res) => {
+  try {
+    Commande.update(req.body.id, { status: 'READY' });
+    const order = Commande.getById(req.body.id);
+
+    res.send(Commande.getById(req.body.id));
   } catch (err) {
     if (err.name === 'ValidationError') {
       res.status(400).json(err.extra);

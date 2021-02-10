@@ -8,11 +8,11 @@ Stream.on('message', (text) => {
 });
 
 const {
-  Repas, Entree, Plat, Dessert, Boisson,
+  Commande, Client,
 } = require('../../models');
 
 const router = new Router();
-router.get('/', (req, res) => { res.status(200).json(Repas.get()); });
+router.get('/', (req, res) => { res.status(200).json(Commande.get()); });
 
 /*
 router.get('/sse', (req, res) => {
@@ -25,44 +25,48 @@ router.get('/sse', (req, res) => {
     res.write('event: ' + String(event) + '\n' + 'data: ' + JSON.stringify(data) + ' \n\n');
   });
 }); */
-
-router.get('/stream', (request, response) => {
+let clients = [];
+router.get('/stream/:id/:name', (request, response) => {
   response.writeHead(200, {
     'Content-Type': 'text/event-stream',
     'Cache-Control': 'no-cache',
     Connection: 'keep-alive',
   });
 
+  const id_client = request.params.id;
+  const tmp = { id_client: request.params.id, name: request.params.name };
+  const client = Client.create(tmp);
+  console.log(tmp);
+  const newClient = {
+    id_client,
+    response,
+  };
+  clients.push(newClient);
   Stream.on('push', (event, data) => {
     response.write(`message: ${String(event)}\n` + `data: ${JSON.stringify(data)}\n\n`);
     // response.end();
   });
 
   response.on('close', () => {
-    console.log('client dropped me');
-    response.end();
+    // console.log('client dropped me');
+    console.log(`${id_client} Connection closed`);
+    clients = clients.filter((c) => c.id !== id_client);
   });
 });
 
 router.post('/', (req, res) => {
   try {
-    /* const entree = Entree.create(req.body.entree);
-     const plat = Plat.create(req.body.plat);
-     const boisson = Boisson.create(req.body.boisson);
-     const dessert = Dessert.create(req.body.dessert); */
-    const entree = req.body.entree.nom;
-    const plat = req.body.plat.nom;
-    const boisson = req.body.boisson.nom;
-    const dessert = req.body.dessert.nom;
-    const { prix } = req.body;
-    const tmp = {
-      prix, entree, plat, boisson, dessert,
-    };
-    console.log(tmp);
-    const repas = Repas.create(tmp);
-    Stream.emit('push', 'new repas', { repas });
-    // Stream.emit('end');
-    res.status(201).json(repas);
+    Commande.update(req.body.id, { status: 'READY' });
+    const order = Commande.getById(req.body.id);
+    // Stream.emit('push', 'updated commande', { order });
+    clients.forEach((c) => {
+      // console.log(c.id_client);
+      // console.log(order.idClient);
+      if (c.id_client == order.idClient) {
+        c.response.write(`message: ${String('event')}\n` + `data: ${JSON.stringify(order)}\n\n`);
+      }
+    });
+    res.send(Commande.getById(req.body.id));
   } catch (err) {
     if (err.name === 'ValidationError') {
       res.status(400).json(err.extra);
