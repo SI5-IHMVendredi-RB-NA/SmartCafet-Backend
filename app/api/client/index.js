@@ -76,4 +76,43 @@ router.post('/', (req, res) => {
   }
 });
 
+router.post('/vague', (req, res) => {
+  try {
+    const TMP = Commande.getById(req.body.id);
+    switch (TMP.status) {
+      case 'PROGRESS':
+        Commande.update(req.body.id, { status: 'PROGRESS1' });
+        console.log('Progress to Progress1');
+        break;
+      case 'PROGRESS1':
+        Commande.update(req.body.id, { status: 'PROGRESS2' });
+        console.log('Progress1 to Progress2');
+        break;
+      case 'PROGRESS2':
+        Commande.update(req.body.id, { status: 'READY' });
+        console.log('Progress2 to READY');
+        const order = Commande.getById(req.body.id);
+        clients.forEach((c) => {
+          // console.log(c.id_client);
+          // console.log(order.idClient);
+          if (c.id_client == order.idClient) {
+            c.response.write(`message: ${String('event')}\n` + `data: ${JSON.stringify(order)}\n\n`);
+          }
+        });
+        break;
+      default:
+        console.log('oups');
+    }
+    // const order = Commande.getById(req.body.id);
+    // Stream.emit('push', 'updated commande', { order });
+    res.send(Commande.getById(req.body.id));
+  } catch (err) {
+    if (err.name === 'ValidationError') {
+      res.status(400).json(err.extra);
+    } else {
+      res.status(500).json(err);
+    }
+  }
+});
+
 module.exports = router;
