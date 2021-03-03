@@ -9,9 +9,6 @@
     "lint": "./node_modules/.bin/eslint -c .eslintrc.js app/",
     "lint:fix": "./node_modules/.bin/eslint -c .eslintrc.js app/ --fix"
   },
-  "precommit": [
-    "lint"
-  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/RayanBenmammar/SmartCafet-Nodejs"

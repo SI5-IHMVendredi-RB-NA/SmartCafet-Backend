@@ -8,7 +8,7 @@ Stream.on('message', (text) => {
 });
 
 const {
-  Repas, Entree, Plat, Dessert, Boisson, Commande,
+  Repas, Commande,
 } = require('../../models');
 
 const router = new Router();
@@ -57,7 +57,7 @@ router.post('/', (req, res) => {
     const repas = Repas.create(tmp);
     const tmpOrder = {
       id: '1',
-      repas: repas,
+      repas,
       status: 'PROGRESS',
       idClient: req.body.idClient,
     };
@@ -76,7 +76,7 @@ router.post('/', (req, res) => {
         const prix = req.body.prix;
         const tmp = {prix, entree, plat, boisson, dessert,}; */
 
-    /*const entree = req.body.entree.nom;
+    /* const entree = req.body.entree.nom;
     const plat = req.body.plat.nom;
     const boisson = req.body.boisson.nom;
     const dessert = req.body.dessert.nom;
@@ -96,7 +96,7 @@ router.post('/', (req, res) => {
     };
     const order = Commande.create(tmpOrder);
     Stream.emit('push', 'new commande', { order });
-    res.status(201).json(order);*/
+    res.status(201).json(order); */
   } catch (err) {
     if (err.name === 'ValidationError') {
       res.status(400).json(err.extra);
@@ -109,8 +109,6 @@ router.post('/', (req, res) => {
 router.post('/validate', (req, res) => {
   try {
     Commande.update(req.body.id, { status: 'READY' });
-    const order = Commande.getById(req.body.id);
-
     res.send(Commande.getById(req.body.id));
   } catch (err) {
     if (err.name === 'ValidationError') {

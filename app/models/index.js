@@ -6,7 +6,8 @@ const Dessert = require('./dessert.model');
 const Boisson = require('./boisson.model');
 const Commande = require('./commande.model');
 const Client = require('./client.model');
+const Preparator = require('./preparator.model');
 
 module.exports = {
-  Ticket, Repas, Entree, Plat, Dessert, Boisson, Commande, Client,
+  Ticket, Repas, Entree, Plat, Dessert, Boisson, Commande, Client, Preparator,
 };

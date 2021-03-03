@@ -33,12 +33,9 @@ router.get('/stream/:id/:name', (request, response) => {
     Connection: 'keep-alive',
   });
 
-  const id_client = request.params.id;
-  const tmp = { id_client: request.params.id, name: request.params.name };
-  const client = Client.create(tmp);
-  console.log(tmp);
+  const idClient = request.params.id;
   const newClient = {
-    id_client,
+    idClient,
     response,
   };
   clients.push(newClient);

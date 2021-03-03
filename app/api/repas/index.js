@@ -8,7 +8,7 @@ Stream.on('message', (text) => {
 });
 
 const {
-  Repas, Entree, Plat, Dessert, Boisson,
+  Repas,
 } = require('../../models');
 
 const router = new Router();
@@ -60,6 +60,8 @@ router.post('/', (req, res) => {
     };
     console.log(tmp);
     const repas = Repas.create(tmp);
+    /* eslint no-useless-concat: "error" */
+    /* eslint-env es6 */
     Stream.emit('push', 'new repas', { repas });
     // Stream.emit('end');
     res.status(201).json(repas);
