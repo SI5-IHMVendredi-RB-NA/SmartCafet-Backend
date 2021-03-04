@@ -39,6 +39,7 @@ router.get('/stream/:id/:name', (request, response) => {
   };
   clients.push(newClient);
   Stream.on('push', (event, data) => {
+    console.log('push all vagues');
     response.write(`message: ${String(event)}\n` + `data: ${JSON.stringify(data)}\n\n`);
     // response.end();
   });
@@ -88,9 +89,8 @@ router.post('/vague', (req, res) => {
         Commande.update(req.body.id, { status: 'READY' });
         console.log('Progress2 to READY');
         const order = Commande.getById(req.body.id);
+        Stream.emit('push', 'order ended', 'order');
         clients.forEach((c) => {
-          // console.log(c.id_client);
-          // console.log(order.idClient);
           if (c.id_client == order.idClient) {
             c.response.write(`message: ${String('event')}\n` + `data: ${JSON.stringify(order)}\n\n`);
           }
