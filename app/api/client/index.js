@@ -32,7 +32,6 @@ router.get('/stream/:id/:name', (request, response) => {
     'Cache-Control': 'no-cache',
     Connection: 'keep-alive',
   });
-
   const idClient = request.params.id;
   const newClient = {
     idClient,
@@ -46,8 +45,8 @@ router.get('/stream/:id/:name', (request, response) => {
 
   response.on('close', () => {
     // console.log('client dropped me');
-    console.log(`${id_client} Connection closed`);
-    clients = clients.filter((c) => c.id !== id_client);
+    console.log(`${idClient} Connection closed`);
+    clients = clients.filter((c) => c.id !== idClient);
   });
 });
 
