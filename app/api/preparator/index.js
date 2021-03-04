@@ -26,9 +26,29 @@ router.get('/stream', (request, response) => {
     // response.end();
   });
 
+  Stream.on('rush', (event, data) => {
+    console.log("ALLO rush?")
+    response.write(`message: ${String(event)}\n` + `data: ${data}\n\n`);
+    // response.end();
+  });
+
   response.on('close', () => {
     console.log('client dropped me');
   });
+});
+
+router.post('/rush', (req, res) => {
+  try {
+    console.log(`rushmode ${req.body.rush} !`);
+    Stream.emit('rush', 'gogogo', 'rush');
+    // res.send('OK RUSH');
+  } catch (err) {
+    if (err.name === 'ValidationError') {
+      res.status(400).json(err.extra);
+    } else {
+      res.status(500).json(err);
+    }
+  }
 });
 
 router.post('/vague', (req, res) => {
