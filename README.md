@@ -1,9 +1,9 @@
-# NodeJS Back-End Starter
+# NodeJS Back-End
 
 ## Install & Run
 
-1) Install [NodeJS Installer](https://nodejs.org/en/download/) (you should already have NodeJS since it was a dependency of the Front-End)
-2) Clone your repository `git clone https://github.com/PATH_TO_YOUR_BACK_END_REPOSITORY.git`
+1) Install [NodeJS Installer](https://nodejs.org/en/download/) (you should already have NodeJS since it is a dependency of the Front-End)
+2) Clone your repository `git clone https://github.com/SI5-IHMVendredi-RB-NA/SmartCafet-Backend.git`
 3) install the dependencies `npm install`
 4) Run the application `npm start`
 
